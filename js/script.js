@@ -45,9 +45,19 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 });
+
 // Theme color (mobile browser UI)
 (() => {
     const TRANSPARENT = new Set(['transparent', 'rgba(0, 0, 0, 0)']);
+
+    function toHexByte(value) {
+        const v = Math.max(0, Math.min(255, Math.round(value)));
+        return v.toString(16).padStart(2, '0');
+    }
+
+    function rgbToHex({ r, g, b }) {
+        return `#${toHexByte(r)}${toHexByte(g)}${toHexByte(b)}`;
+    }
 
     function parseRgbOrRgba(input) {
         const match = input
@@ -106,6 +116,14 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         meta.setAttribute('content', content);
     }
 
+    function normalizeToHex(color) {
+        if (!color) return null;
+        const trimmed = color.trim();
+        if (trimmed.startsWith('#')) return trimmed;
+        const parsed = parseRgbOrRgba(trimmed.toLowerCase());
+        return parsed ? rgbToHex(parsed) : null;
+    }
+
     function pickHeaderThemeColor(headerEl) {
         if (!headerEl) return null;
 
@@ -124,16 +142,8 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         const color = pickHeaderThemeColor(header);
         if (!color) return;
 
-        ensureMeta('theme-color', color);
-
-        // iOS: no permite color custom en status bar (solo estilos). En modo standalone,
-        // "black-translucent" deja ver el color del header debajo.
-        const parsed = parseRgbOrRgba(color);
-        if (parsed) {
-            const lum = relativeLuminance(parsed);
-            const preferred = lum < 0.55 ? 'black-translucent' : 'default';
-            ensureMeta('apple-mobile-web-app-status-bar-style', preferred);
-        }
+        const hex = normalizeToHex(color) || '#0080dd';
+        ensureMeta('theme-color', hex);
     }
 
     // Se ejecuta al cargar y al volver del bfcache
