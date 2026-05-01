@@ -7,6 +7,7 @@
 
     --color-primary: #0080dd;
     --color-primary-dark: #005fa3;
+    --color-statusbar: #0070c4;
     --color-primary-light: #4da6ff;
     --color-secondary: #00d4ff;
     --color-accent: #ff6b35;
@@ -37,14 +38,14 @@
 
 html {
     scroll-behavior: smooth;
-    background: var(--color-primary);
+    background: var(--color-statusbar);
 }
 
 body {
     font-family: var(--font-display);
     line-height: 1.6;
     color: var(--color-dark);
-    background: var(--color-primary);
+    background: var(--color-statusbar);
     overflow-x: hidden;
 }
 
@@ -55,7 +56,7 @@ body::before {
     left: 0;
     right: 0;
     height: env(safe-area-inset-top, 0px);
-    background: var(--color-primary);
+    background: var(--color-statusbar);
     pointer-events: none;
     z-index: 1002;
 }
@@ -75,7 +76,7 @@ main {
 ====================== */
 
 .navbar {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    background: var(--color-statusbar);
     padding: calc(0.5rem + env(safe-area-inset-top, 0px)) 0 0.5rem;
     box-shadow: var(--shadow-md);
     position: sticky;
