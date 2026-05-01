@@ -46,8 +46,9 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Theme color (mobile browser UI)
+// Theme color (mobile browser UI / iOS Safari)
 (() => {
+    const HEADER_THEME_COLOR = '#0080dd';
     const TRANSPARENT = new Set(['transparent', 'rgba(0, 0, 0, 0)']);
 
     function toHexByte(value) {
@@ -107,13 +108,28 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     }
 
     function ensureMeta(name, content) {
-        let meta = document.querySelector(`meta[name="${name}"]`);
+        let meta = document.querySelector(`meta[name="${name}"]:not([media])`);
         if (!meta) {
             meta = document.createElement('meta');
             meta.setAttribute('name', name);
             document.head.appendChild(meta);
         }
         meta.setAttribute('content', content);
+    }
+
+    function ensureThemeColorMetas(content) {
+        ensureMeta('theme-color', content);
+
+        ['(prefers-color-scheme: light)', '(prefers-color-scheme: dark)'].forEach(media => {
+            let meta = document.querySelector(`meta[name="theme-color"][media="${media}"]`);
+            if (!meta) {
+                meta = document.createElement('meta');
+                meta.setAttribute('name', 'theme-color');
+                meta.setAttribute('media', media);
+                document.head.appendChild(meta);
+            }
+            meta.setAttribute('content', content);
+        });
     }
 
     function normalizeToHex(color) {
@@ -139,14 +155,25 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
     function updateThemeColorFromHeader() {
         const header = document.querySelector('header.navbar, header, .navbar');
-        const color = pickHeaderThemeColor(header);
-        if (!color) return;
+        const color = pickHeaderThemeColor(header) || HEADER_THEME_COLOR;
 
-        const hex = normalizeToHex(color) || '#0080dd';
-        ensureMeta('theme-color', hex);
+        const hex = normalizeToHex(color) || HEADER_THEME_COLOR;
+        ensureThemeColorMetas(hex);
+        document.documentElement.classList.toggle('is-scrolled', window.scrollY > 0);
     }
 
-    // Se ejecuta al cargar y al volver del bfcache
+    let ticking = false;
+    function requestThemeColorUpdate() {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(() => {
+            updateThemeColorFromHeader();
+            ticking = false;
+        });
+    }
+
+    // Se ejecuta al cargar, al volver del bfcache y al hacer scroll.
     updateThemeColorFromHeader();
     window.addEventListener('pageshow', updateThemeColorFromHeader);
+    window.addEventListener('scroll', requestThemeColorUpdate, { passive: true });
 })();
