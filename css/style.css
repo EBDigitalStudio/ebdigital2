@@ -3,6 +3,8 @@
 ====================== */
 
 :root {
+    color-scheme: light;
+
     --color-primary: #0080dd;
     --color-primary-dark: #005fa3;
     --color-primary-light: #4da6ff;
@@ -42,7 +44,7 @@ body {
     font-family: var(--font-display);
     line-height: 1.6;
     color: var(--color-dark);
-    background: var(--color-white);
+    background: var(--color-primary);
     overflow-x: hidden;
 }
 
@@ -62,6 +64,10 @@ body::before {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
+}
+
+main {
+    background: var(--color-white);
 }
 
 /* ======================
