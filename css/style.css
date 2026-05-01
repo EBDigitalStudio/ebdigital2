@@ -35,13 +35,27 @@
 
 html {
     scroll-behavior: smooth;
+    background: var(--color-primary);
 }
 
 body {
     font-family: var(--font-display);
     line-height: 1.6;
     color: var(--color-dark);
+    background: var(--color-white);
     overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: env(safe-area-inset-top, 0px);
+    background: var(--color-primary);
+    pointer-events: none;
+    z-index: 1002;
 }
 
 .container {
